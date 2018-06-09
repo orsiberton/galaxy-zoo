@@ -9,6 +9,7 @@ import utils
 
 def main():
     pre_process_images(utils.get_training_images_path(), utils.get_training_images_pre_processed_path())
+    pre_process_images(utils.get_test_images_path(), utils.get_test_images_pre_processed_path())
 
 
 def pre_process_images(root_dir=None, pre_processed_dir=None):
