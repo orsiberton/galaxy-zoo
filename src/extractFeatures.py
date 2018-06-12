@@ -1,3 +1,4 @@
+import csv
 import os
 from concurrent.futures import ThreadPoolExecutor
 
@@ -6,9 +7,15 @@ from skimage.feature import hog
 
 import utils
 
+"""
+
+The first column of the features CSV is the galaxy ID.
+
+"""
+
 
 def main():
-    extract_features(utils.get_training_images_pre_processed_path(), 'training_features.csv')
+    extract_features(utils.get_training_images_pre_processed_path(), utils.get_training_features_path())
 
 
 def extractor(procnum, image_path, image_name):
@@ -34,14 +41,13 @@ def extract_features(images_path=None, output_filename=None):
         workers.append(td)
         i += 1
 
-        if i == 6:
-            break
-
     for worker_index in range(len(workers)):
         features.append(workers[worker_index].result())
 
-    print(features)
-    # TODO save this features to a CSV with pandas
+    with open(output_filename, 'w') as csv_file:
+        writer = csv.writer(csv_file)
+        for feature in features:
+            writer.writerow(feature)
 
 
 if __name__ == '__main__':
