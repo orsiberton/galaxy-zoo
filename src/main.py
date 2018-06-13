@@ -1,15 +1,16 @@
-# Main será usado para orquestrar os outros scripts python
-# Executar o pré-processamento nas imagens
-# TALVEZ, fazer o data augmentation
-# rodar o treino
-# rodar o test
-# criar o csv final com as respostas
-
+import extractFeatures
 import preProcessImage
+import splitTrainingSolutionsCSV
 
 
 def main():
+    # First solution with default extractors like HOG and 11 classifiers
     preProcessImage.main()
+    extractFeatures.main()
+    splitTrainingSolutionsCSV.main()
+
+    # Second solution with features extracted by a DNN and MultiClass-MultiLabel classifier
+    # TODO
 
 
 if __name__ == '__main__':

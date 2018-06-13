@@ -18,6 +18,10 @@ def get_training_features_path():
     return "../data/training_features.csv"
 
 
+def get_test_features_path():
+    return "../data/test_features.csv"
+
+
 def get_training_solution_csv_path():
     return "../data/training_solutions.csv"
 

@@ -16,6 +16,7 @@ The first column of the features CSV is the galaxy ID.
 
 def main():
     extract_features(utils.get_training_images_pre_processed_path(), utils.get_training_features_path())
+    extract_features(utils.get_test_images_pre_processed_path(), utils.get_test_features_path())
 
 
 def extractor(procnum, image_path, image_name):
