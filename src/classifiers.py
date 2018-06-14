@@ -11,6 +11,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
+import generateCSVAnswer
 import utils
 
 
@@ -25,33 +26,18 @@ def classify_v1():
     joins up everything in to the final answer.
 
     """
-
     galaxy_ids, features = read_features(utils.get_training_features_path())
+    test_galaxy_ids, test_features = read_features(utils.get_test_features_path())
 
-    # TODO do this for every class
+    y_pred = []
+    for class_number in range(1, 12):
+        y_pred.append(classify_class(class_number, features, test_features))
 
-    y_true = read_y_true_for_class(utils.get_data_path() + "/Class1.csv")
+    # Creates an array [n_samples, number of classes] which each position is the answer for the given class
+    y_pred = np.array(y_pred)
+    y_pred = np.transpose(y_pred)
 
-    print(galaxy_ids)
-    print(features)
-    print(features.shape)
-    print(y_true)
-
-    # splits the train data into train and validation with validation being 20% of the original train data set
-    x_train, x_validation, y_train, y_validation = train_test_split(features, y_true, test_size=0.20, random_state=0)
-
-    classifier = create_rf_classifier(240)
-    classifier.fit(x_train, y_train)
-
-    score = classifier.score(x_validation, y_validation)
-    print("Training score: {0:0.2f}".format(score))
-
-    """
-    
-    
-    """
-
-    return 0
+    generateCSVAnswer.generate_csv(test_galaxy_ids, y_pred)
 
 
 def classify_v2():
@@ -60,6 +46,20 @@ def classify_v2():
 
     """
     return 0
+
+
+def classify_class(class_number, features, test_features):
+    y_true = read_y_true_for_class(utils.get_data_path() + "/Class{}.csv".format(class_number))
+
+    # splits the train data into train and validation with validation being 20% of the original train data set
+    x_train, x_validation, y_train, y_validation = train_test_split(features, y_true, test_size=0.20, random_state=0)
+
+    classifier = create_rf_classifier(240)
+    classifier.fit(x_train, y_train)
+
+    score = classifier.score(x_validation, y_validation)
+    print("Training score for Class {}: {:0.2f}".format(class_number, score))
+    return classifier.predict(test_features).tolist()
 
 
 def read_features(file_path):
@@ -73,9 +73,9 @@ def read_features(file_path):
             features.append([float(feature) for feature in line[1:]])
 
             # TODO delete this
-            i += 1
-            if i == 10000:
-                break
+            # i += 1
+            # if i == 1000:
+            #     break
 
     return galaxy_ids, np.array(features)
 
@@ -90,15 +90,15 @@ def read_y_true_for_class(class_path):
             y_true.append(int(line[1]))
 
             # TODO delete this
-            i += 1
-            if i == 10000:
-                break
+            # i += 1
+            # if i == 1000:
+            #     break
 
     return y_true
 
 
 def create_rf_classifier(n_estimators, max_depth=9):
-    return RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth)
+    return RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, n_jobs=-1)
 
 
 if __name__ == '__main__':
