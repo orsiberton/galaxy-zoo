@@ -17,7 +17,7 @@ import utils
 
 def main():
     classify_v1()
-    classify_v2()
+    # classify_v2()
 
 
 def classify_v1():

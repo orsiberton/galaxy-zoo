@@ -1,3 +1,4 @@
+import classifiers
 import extractFeatures
 import preProcessImage
 import splitTrainingSolutionsCSV
@@ -8,6 +9,7 @@ def main():
     preProcessImage.main()
     extractFeatures.main()
     splitTrainingSolutionsCSV.main()
+    classifiers.classify_v1()
 
     # Second solution with features extracted by a DNN and MultiClass-MultiLabel classifier
     # TODO
