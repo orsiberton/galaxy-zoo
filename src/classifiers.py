@@ -9,7 +9,9 @@ import csv
 
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
+from sklearn.multioutput import MultiOutputClassifier
 
 import generateCSVAnswer
 import utils
@@ -17,7 +19,7 @@ import utils
 
 def main():
     classify_v1()
-    # classify_v2()
+    classify_v2()
 
 
 def classify_v1():
@@ -45,7 +47,43 @@ def classify_v2():
     Method to classify images based on a multiClass-multiLabel classifier.
 
     """
-    return 0
+    galaxy_ids, features = read_features(utils.get_training_features_path())
+    test_galaxy_ids, test_features = read_features(utils.get_test_features_path())
+
+    y_pred = classify_class_multi_label(features, test_features)
+
+    generateCSVAnswer.generate_csv(test_galaxy_ids, y_pred)
+
+
+def read_y_true_for_all_classes():
+    y_true = []
+    for class_number in range(1, 12):
+        y_true.append(read_y_true_for_class(utils.get_data_path() + "/Class{}.csv".format(class_number)))
+
+    # Creates an array [n_samples, number of classes] which each position is the labeled data for the given class
+    y_true = np.array(y_true)
+    y_true = np.transpose(y_true)
+
+    return y_true
+
+
+def classify_class_multi_label(features, test_features):
+    y_true = read_y_true_for_all_classes()
+
+    # splits the train data into train and validation with validation being 20% of the original train data set
+    x_train, x_validation, y_train, y_validation = train_test_split(features, y_true, test_size=0.20, random_state=0)
+
+    classifier = MultiOutputClassifier(create_rf_classifier(240), n_jobs=-1)
+    classifier.fit(x_train, y_train)
+
+    y_true_transposed = np.transpose(y_true)
+    y_pred_transposed = np.transpose(classifier.predict(features))
+
+    for class_number in range(0, 11):
+        score = accuracy_score(y_true_transposed[class_number], y_pred_transposed[class_number], normalize=True)
+        print("Training score for Class {}: {:0.2f}".format(class_number + 1, score))
+
+    return classifier.predict(test_features)
 
 
 def classify_class(class_number, features, test_features):
