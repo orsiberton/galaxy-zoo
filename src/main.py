@@ -13,7 +13,7 @@ def main():
     classifiers.classify_v1()
 
     # Second solution with features extracted by a DNN and MultiClass-MultiLabel classifier
-    extractFeatures.main()  # TODO change this to CNN when it's ready
+    extractFeaturesCNN.main()  # TODO change this to CNN when it's ready
     classifiers.classify_v2()
 
 
